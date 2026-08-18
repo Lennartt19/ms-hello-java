@@ -3,68 +3,378 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Portal DevOps - Hola Leonardo</title>
+  <title>Control Plane DevOps - Hola Leonardo</title>
   <style>
     :root{
-      --bg1:#020617; --bg2:#031323; --neon:#00fff6; --accent:#7c3aed; --muted:#9aa9b8; --glass:rgba(255,255,255,0.04)
+      --bg0:#02040a;
+      --bg1:#051224;
+      --bg2:#071f33;
+      --panel:rgba(8,17,30,0.88);
+      --line:rgba(255,255,255,0.08);
+      --text:#ecf5ff;
+      --muted:#93a4ba;
+      --cyan:#32f5e8;
+      --blue:#60a5fa;
+      --green:#34d399;
+      --amber:#fbbf24;
+      --shadow:0 35px 90px rgba(0,0,0,0.55);
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;background:radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.06), transparent), linear-gradient(135deg,var(--bg1),var(--bg2));color:#e6eef6;display:flex;align-items:center;justify-content:center;height:100vh}
-    .wrap{position:relative;overflow:hidden;padding:30px;border-radius:16px;width:920px;max-width:96%;backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.12));border:1px solid var(--glass);box-shadow:0 30px 80px rgba(3,6,23,0.7)}
-    /* animated grid */
-    .wrap::before{content:"";position:absolute;inset:0;background-image:linear-gradient(0deg,rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:40px 40px;opacity:0.06;mix-blend-mode:overlay}
-    .header{display:flex;align-items:center;gap:18px;position:relative;z-index:2}
-    .logo{width:78px;height:78px;border-radius:14px;background:conic-gradient(from 180deg at 50% 50%, #2dd4bf, #06b6d4, #7c3aed);display:flex;align-items:center;justify-content:center;font-weight:900;color:#021226;letter-spacing:1px}
-    h1{margin:0;font-size:30px}
-    p{color:var(--muted);margin:8px 0 18px}
-    .actions{display:flex;gap:12px;margin-top:14px}
-    .btn{background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);padding:12px 18px;border-radius:12px;color:var(--neon);cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:12px;text-decoration:none}
-    .btn.primary{background:linear-gradient(90deg,var(--neon),#7c3aed);color:#031226;border:none;box-shadow:0 8px 30px rgba(124,58,237,0.18),0 2px 8px rgba(0,0,0,0.6)}
-    .btn svg{filter:drop-shadow(0 6px 16px rgba(0,0,0,0.6))}
-    .grid{display:flex;gap:18px;margin-top:20px}
-    .card{flex:1;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(0,0,0,0.06));border:1px solid rgba(255,255,255,0.03)}
-    .card h3{margin:0 0 8px}
-    .meta{display:flex;gap:10px;flex-wrap:wrap}
-    .chip{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted);font-size:13px}
-    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:right}
-    @keyframes glow{0%{filter:drop-shadow(0 0 4px rgba(0,255,246,0.2))}50%{filter:drop-shadow(0 0 18px rgba(124,58,237,0.18))}100%{filter:drop-shadow(0 0 4px rgba(0,255,246,0.2))}}
-    .logo{animation:glow 3.5s ease-in-out infinite}
+    html,body{min-height:100%}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 15% 15%, rgba(50,245,232,0.16), transparent 26%),
+        radial-gradient(circle at 85% 12%, rgba(96,165,250,0.16), transparent 22%),
+        radial-gradient(circle at 82% 82%, rgba(124,58,237,0.16), transparent 26%),
+        linear-gradient(160deg,var(--bg0),var(--bg1) 45%,var(--bg2));
+      display:grid;
+      place-items:center;
+      padding:28px;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size:42px 42px;
+      opacity:0.12;
+      mask-image:linear-gradient(180deg, rgba(0,0,0,0.85), transparent 92%);
+      pointer-events:none;
+    }
+    .frame{
+      width:min(1180px,100%);
+      position:relative;
+      overflow:hidden;
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+    }
+    .frame::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(120deg, rgba(50,245,232,0.08), transparent 36%, rgba(96,165,250,0.09));
+      pointer-events:none;
+    }
+    .hero{
+      position:relative;
+      z-index:1;
+      padding:30px;
+      display:grid;
+      grid-template-columns:1.35fr 0.9fr;
+      gap:22px;
+      align-items:stretch;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .badge{
+      width:72px;
+      height:72px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+      letter-spacing:1.2px;
+      color:#031226;
+      background:conic-gradient(from 180deg, var(--cyan), var(--blue), #8b5cf6, var(--cyan));
+      box-shadow:0 0 0 1px rgba(255,255,255,0.14), 0 18px 40px rgba(50,245,232,0.18);
+      animation:pulse 4s ease-in-out infinite;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(34px,5vw,60px);
+      line-height:1.02;
+      letter-spacing:-0.04em;
+    }
+    .lead{
+      margin:16px 0 22px;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.7;
+      max-width:62ch;
+    }
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:14px 18px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:800;
+      letter-spacing:0.01em;
+      transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{
+      color:#04111f;
+      background:linear-gradient(90deg, var(--cyan), var(--blue));
+      box-shadow:0 16px 34px rgba(50,245,232,0.16);
+    }
+    .btn.secondary{
+      color:var(--text);
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(255,255,255,0.03);
+    }
+    .status{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:20px;
+    }
+    .chip{
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      color:var(--muted);
+      font-size:13px;
+    }
+    .dashboard{
+      display:grid;
+      gap:14px;
+    }
+    .terminal,
+    .card,
+    .metric{
+      border:1px solid rgba(255,255,255,0.08);
+      background:var(--panel);
+      box-shadow:0 16px 40px rgba(0,0,0,0.24);
+    }
+    .terminal{
+      border-radius:22px;
+      padding:16px;
+      min-height:240px;
+      position:relative;
+      overflow:hidden;
+    }
+    .terminal::after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -100px auto;
+      width:220px;
+      height:220px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(50,245,232,0.22), transparent 65%);
+      filter:blur(4px);
+    }
+    .terminal-bar{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:14px;
+    }
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.red{background:#fb7185}.dot.yellow{background:#fbbf24}.dot.green{background:#34d399}
+    .terminal pre{
+      margin:0;
+      white-space:pre-wrap;
+      color:#cbe7ff;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size:13px;
+      line-height:1.75;
+    }
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:14px;
+    }
+    .metric{
+      border-radius:20px;
+      padding:18px;
+    }
+    .metric .label{
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      font-size:11px;
+    }
+    .metric .value{
+      margin-top:10px;
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-0.03em;
+    }
+    .metric .hint{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}
+    .lower{
+      padding:0 30px 30px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+    .card{
+      border-radius:22px;
+      padding:20px;
+    }
+    .card h2{
+      margin:0 0 10px;
+      font-size:18px;
+      letter-spacing:-0.02em;
+    }
+    .card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+    }
+    .pipeline{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+    .step{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.08);
+    }
+    .step strong{display:block}
+    .step span{color:var(--muted);font-size:13px}
+    .step em{
+      font-style:normal;
+      color:var(--green);
+      font-weight:800;
+      font-size:12px;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+    }
+    footer{
+      padding:0 30px 24px;
+      color:var(--muted);
+      font-size:13px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    @keyframes pulse{
+      0%,100%{transform:translateY(0);box-shadow:0 0 0 1px rgba(255,255,255,0.14), 0 18px 40px rgba(50,245,232,0.18)}
+      50%{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,255,255,0.16), 0 24px 50px rgba(96,165,250,0.22)}
+    }
+    @media (max-width: 960px){
+      .hero,.lower{grid-template-columns:1fr}
+      .metrics{grid-template-columns:1fr}
+      .frame{border-radius:22px}
+    }
+    @media (max-width: 640px){
+      body{padding:14px}
+      .hero,.lower,footer{padding-left:18px;padding-right:18px}
+      .hero{padding-top:18px;padding-bottom:18px}
+      h1{font-size:30px}
+      .badge{width:60px;height:60px;border-radius:16px}
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="header">
-      <div class="logo">DEV</div>
+  <main class="frame">
+    <section class="hero">
       <div>
-        <h1>Portal DevOps — Hola Leonardo</h1>
-        <p>Interfaz simple con enlaces a los endpoints del microservicio: saludo y secretos. Diseñado con estética DevOps.</p>
+        <div class="brand">
+          <div class="badge">IaC</div>
+          <div>
+            <div class="chip">Platform Engineering</div>
+            <div class="chip">DevOps Control Plane</div>
+          </div>
+        </div>
+        <h1>Portal DevOps para monitorear, desplegar y validar el stack</h1>
+        <p class="lead">Una portada con estética más técnica: telemetría, pipeline, contenedores y acceso directo a los endpoints del servicio. Ideal para mostrar un flujo de trabajo de infraestructura como código.</p>
         <div class="actions">
           <a class="btn primary" href="/saludo">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7v6c0 5 4 9 10 9s10-4 10-9V7l-10-5z" stroke="#021226" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Ir a Saludo
           </a>
-          <a class="btn" href="/secreto">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v12" stroke="#00fff6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7h8" stroke="#00fff6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <a class="btn secondary" href="/secreto">
             Ver Secretos (JSON)
           </a>
         </div>
+        <div class="status">
+          <span class="chip">Docker</span>
+          <span class="chip">Spring Boot</span>
+          <span class="chip">GitOps</span>
+          <span class="chip">Observabilidad</span>
+          <span class="chip">CI/CD</span>
+        </div>
       </div>
-    </div>
 
-    <div class="grid">
-      <div class="card">
-        <h3>CI/CD</h3>
-        <p>Build, test y despliegue automáticos. Integración con pipelines para entrega continua.</p>
-        <div class="meta"><span class="chip">Gradle</span><span class="chip">GitHub Actions</span><span class="chip">Docker</span></div>
-      </div>
-      <div class="card">
-        <h3>Observabilidad</h3>
-        <p>Métricas, logs y traces para asegurar el rendimiento y la fiabilidad. Telemetría y alertas.</p>
-        <div class="meta"><span class="chip">Prometheus</span><span class="chip">Grafana</span><span class="chip">ELK</span></div>
-      </div>
-    </div>
+      <div class="dashboard">
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="chip">/health /secreto /saludo</span>
+          </div>
+          <pre>service: proyecto-iac
+runtime: spring-boot
+status: healthy
+pipeline: build -> test -> package -> image -> deploy
+signals: logs, metrics, traces
+exposure: /secreto + env vars</pre>
+        </div>
 
-    <footer>© Proyecto IaC — DevOps theme • <small>Contenedor y endpoints: <code>/saludo</code>, <code>/secreto</code></small></footer>
-  </div>
+        <div class="metrics">
+          <div class="metric">
+            <div class="label">Uptime</div>
+            <div class="value">99.99%</div>
+            <div class="hint">Indicador visual para una plataforma lista para producción.</div>
+          </div>
+          <div class="metric">
+            <div class="label">Pipelines</div>
+            <div class="value">05</div>
+            <div class="hint">Build, test, security scan, image y deploy.</div>
+          </div>
+          <div class="metric">
+            <div class="label">Signals</div>
+            <div class="value">03</div>
+            <div class="hint">Métricas, logs y trazas para observabilidad.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lower">
+      <article class="card">
+        <h2>Arquitectura</h2>
+        <p>La interfaz usa bloques tipo dashboard para simular una consola operativa, con jerarquía clara, datos de plataforma y una estética más cercana a un panel DevOps real.</p>
+        <div class="pipeline">
+          <div class="step"><div><strong>Build</strong><span>Compilación y empaquetado con Gradle</span></div><em>ok</em></div>
+          <div class="step"><div><strong>Ship</strong><span>Creación de imagen y despliegue en contenedor</span></div><em>ok</em></div>
+          <div class="step"><div><strong>Observe</strong><span>Variables, secretos y estado de runtime</span></div><em>live</em></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Acceso rápido</h2>
+        <p>El endpoint de secreto ahora muestra más variables de entorno visibles en una sola respuesta, agrupadas para facilitar la lectura y el demo de infraestructura.</p>
+        <div class="pipeline">
+          <div class="step"><div><strong>/secreto</strong><span>Secreto + variables visibles</span></div><em>json</em></div>
+          <div class="step"><div><strong>/saludo</strong><span>Vista HTML futurista</span></div><em>ui</em></div>
+          <div class="step"><div><strong>/hello</strong><span>Respuesta rápida de salud funcional</span></div><em>ping</em></div>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      <span>© Proyecto IaC</span>
+      <span>Control plane visual para demos DevOps y IaC</span>
+    </footer>
+  </main>
 </body>
 </html>
